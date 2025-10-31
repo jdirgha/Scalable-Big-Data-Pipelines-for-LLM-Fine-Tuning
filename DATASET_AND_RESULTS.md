@@ -140,11 +140,11 @@ The benchmark tests three different pipeline implementations, each applying the 
 ### 4.1 Key Findings
 
 #### **Single-Process Implementation (Winner for Throughput)**
-- ✅ **Highest throughput** across all dataset sizes
-- ✅ **Best for small-to-medium datasets** (< 50K rows)
-- ✅ **No overhead** from parallelization
-- ⚠️ **Higher memory usage** (310 MB)
-- ⚠️ **Single CPU core utilization**
+-  **Highest throughput** across all dataset sizes
+-  **Best for small-to-medium datasets** (< 50K rows)
+-  **No overhead** from parallelization
+-  **Higher memory usage** (310 MB)
+-  **Single CPU core utilization**
 
 **Why it's fastest:**
 - No inter-process communication overhead
@@ -153,10 +153,10 @@ The benchmark tests three different pipeline implementations, each applying the 
 - Direct memory access
 
 #### **Multiprocessing Implementation**
-- ✅ **Better memory efficiency** than single (199 MB vs 310 MB)
-- ✅ **Multi-core utilization**
-- ⚠️ **Slower than single-process** due to overhead
-- ⚠️ **High startup cost** for small datasets
+-  **Better memory efficiency** than single (199 MB vs 310 MB)
+-  **Multi-core utilization**
+-  **Slower than single-process** due to overhead
+-  **High startup cost** for small datasets
 
 **Performance characteristics:**
 - 15% slower than single-process (32K rows)
@@ -164,11 +164,11 @@ The benchmark tests three different pipeline implementations, each applying the 
 - Overhead dominates for datasets < 100K rows
 
 #### **Ray Implementation**
-- ✅ **Lowest memory footprint** (182 MB)
-- ✅ **Best scalability** for distributed computing
-- ✅ **Designed for clusters** and large-scale data
-- ❌ **Significant overhead** for small datasets
-- ❌ **90% slower** than single-process (32K rows)
+-  **Lowest memory footprint** (182 MB)
+-  **Best scalability** for distributed computing
+-  **Designed for clusters** and large-scale data
+-  **Significant overhead** for small datasets
+-  **90% slower** than single-process (32K rows)
 
 **When to use Ray:**
 - Datasets > 1M rows
@@ -212,7 +212,7 @@ The benchmark tests three different pipeline implementations, each applying the 
 
 **Memory-Time Product (MB·s, lower is better):**
 - Single: 2,687 MB·s
-- Multi: 2,012 MB·s ✅ **(Best overall efficiency)**
+- Multi: 2,012 MB·s  **(Best overall efficiency)**
 - Ray: 15,952 MB·s
 
 ---
@@ -325,10 +325,10 @@ python plot_metrics.py
 This benchmark demonstrates that **simple single-process implementations often outperform complex distributed frameworks** for small-to-medium datasets (<100K rows). The overhead of parallelization (serialization, IPC, scheduling) dominates processing time for datasets that fit comfortably in memory.
 
 **Key Takeaways:**
-1. ✅ **Single-process is fastest** for this dataset size
-2. ✅ **Multiprocessing offers best memory-time trade-off**
-3. ✅ **Ray is ideal for distributed/large-scale scenarios**
-4. ✅ **Choose implementation based on dataset size and infrastructure**
+1.  **Single-process is fastest** for this dataset size
+2.  **Multiprocessing offers best memory-time trade-off**
+3.  **Ray is ideal for distributed/large-scale scenarios**
+4.  **Choose implementation based on dataset size and infrastructure**
 
 For the 32,432-row dataset used in this benchmark, **single-process processing is 17% faster** than multiprocessing and **90% faster** than Ray, while consuming reasonable memory (310 MB).
 

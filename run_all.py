@@ -11,13 +11,7 @@ from pathlib import Path
 
 
 def run_command(cmd: list, description: str):
-    """
-    Run a command and handle errors.
-    
-    Args:
-        cmd: Command as list of strings
-        description: Human-readable description
-    """
+   
     print("\n" + "=" * 70)
     print(f"Running: {description}")
     print("=" * 70)
@@ -33,12 +27,12 @@ def run_command(cmd: list, description: str):
 
 
 def main():
-    """Run complete benchmark suite."""
+   
     print("\n" + "=" * 70)
     print("LLM Pipeline Benchmark - Complete Suite")
     print("=" * 70)
     
-    # Check if we're in the right directory
+    
     if not Path("src").exists():
         print("[ERROR] 'src' directory not found!")
         print("Please run this script from the project root directory.")
@@ -105,7 +99,7 @@ def main():
     else:
         print("\n[WARNING] No metrics.csv found. Skipping visualization generation.")
     
-    # Step 6: (Optional) Compare formats
+    # Step 6: Compare formats
     if Path("results/output_single.jsonl").exists():
         print("\n" + "=" * 70)
         print("Optional: Format Comparison")
@@ -121,7 +115,7 @@ def main():
                 "Format Comparison (JSONL vs Parquet)"
             )
     
-    # Final summary
+   
     print("\n" + "=" * 70)
     print("Benchmark Suite Complete!")
     print("=" * 70)

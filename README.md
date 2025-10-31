@@ -232,15 +232,6 @@ Each pipeline performs:
 - Memory: `psutil.Process().memory_info().rss` for RSS memory
 - Throughput: rows processed / elapsed time
 
-## Academic Report
-
-See `report/METCS777_Final_Report.md` for the complete term paper including:
-- Literature review
-- Methodology
-- Experimental setup
-- Results analysis
-- Discussion and conclusions
-
 ## Files Generated
 
 After running the full benchmark:

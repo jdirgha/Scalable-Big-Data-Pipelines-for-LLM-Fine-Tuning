@@ -1,10 +1,6 @@
 """
 Format Comparison Utility
 
-Compare JSONL vs Parquet formats for:
-- Read/write speed
-- File size
-- Memory efficiency
 """
 
 import json
@@ -113,7 +109,7 @@ def benchmark_parquet_read(input_path: str) -> dict:
     """
     start_time = time.time()
     
-    # Read parquet file
+
     df = pd.read_parquet(input_path)
     data = df.to_dict('records')
     
@@ -139,7 +135,7 @@ def run_format_comparison(input_jsonl: str, results_dir: str = 'results'):
     print("Format Comparison: JSONL vs Parquet")
     print("=" * 70)
     
-    # Ensure results directory exists
+    
     Path(results_dir).mkdir(parents=True, exist_ok=True)
     
     # Load data from input JSONL
@@ -149,7 +145,7 @@ def run_format_comparison(input_jsonl: str, results_dir: str = 'results'):
     
     print(f"Loaded {len(data):,} rows\n")
     
-    # Define output paths
+    
     jsonl_out = f"{results_dir}/temp_output.jsonl"
     parquet_out = f"{results_dir}/temp_output.parquet"
     
@@ -181,7 +177,7 @@ def run_format_comparison(input_jsonl: str, results_dir: str = 'results'):
     results.append(parquet_read_metrics)
     print(f"  Time: {parquet_read_metrics['time_sec']:.2f}s")
     
-    # Summary
+   
     print("\n" + "=" * 70)
     print("Summary")
     print("=" * 70)
@@ -206,7 +202,7 @@ def run_format_comparison(input_jsonl: str, results_dir: str = 'results'):
     
     print("\n" + "=" * 70 + "\n")
     
-    # Save results to CSV
+   
     results_df = pd.DataFrame(results)
     results_csv = f"{results_dir}/format_comparison.csv"
     results_df.to_csv(results_csv, index=False)
