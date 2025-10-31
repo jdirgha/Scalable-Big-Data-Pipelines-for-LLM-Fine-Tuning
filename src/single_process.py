@@ -15,6 +15,7 @@ from measure_utils import (
 
 
 def normalize_text(text: str) -> str:
+    """Normalize text by lowercasing and removing special characters."""
     text = text.lower()
     text = re.sub(r"[^a-zA-Z0-9\s]", "", text)
     text = re.sub(r"\s+", " ", text).strip()
@@ -22,6 +23,7 @@ def normalize_text(text: str) -> str:
 
 
 def process_text(text: str, tokenizer, row_id: int) -> dict:
+    """Process text through normalization and tokenization pipeline."""
     normalized = normalize_text(text)
     tokens = tokenizer.tokenize(normalized)
     formatted = " ".join(tokens)
@@ -44,6 +46,12 @@ def run_single_process_pipeline(
     output_file: str,
     max_rows: int = None
 ):
+    """
+    Run single-process text preprocessing pipeline.
+    
+    Processes data sequentially in a single Python process.
+    Good for small to medium datasets where parallelization overhead isn't worth it.
+    """
     print("\n" + "=" * 70)
     print("Running Single-Process Pipeline")
     print("=" * 70)
@@ -63,13 +71,12 @@ def run_single_process_pipeline(
     
     print(f"Processing {total_lines:,} rows...")
     
-    # Storage for intermediate outputs
+    # Store intermediate outputs at each pipeline stage
     normalized_data = []
     tokenized_data = []
     formatted_data = []
     final_data = []
     
-    # Process data sequentially
     rows_processed = 0
     
     with open(input_file, 'r', encoding='utf-8') as infile:
@@ -85,10 +92,10 @@ def run_single_process_pipeline(
                 if not text:
                     continue
                 
-                # Process text through all stages
+                # Process text through all pipeline stages
                 processed = process_text(text, tokenizer, rows_processed)
                 
-                # Collect intermediate outputs
+                # Save intermediate outputs for analysis
                 normalized_data.append({
                     'id': processed['id'],
                     'text': processed['normalized']

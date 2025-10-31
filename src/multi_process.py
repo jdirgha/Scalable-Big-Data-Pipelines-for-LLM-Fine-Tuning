@@ -15,15 +15,18 @@ from measure_utils import (
 )
 
 
+# Global tokenizer for worker processes
 _tokenizer = None
 
 
 def init_worker():
+    """Initialize tokenizer in each worker process."""
     global _tokenizer
     _tokenizer = GPT2TokenizerFast.from_pretrained('gpt2')
 
 
 def normalize_text(text: str) -> str:
+    """Normalize text by lowercasing and removing special characters."""
     text = text.lower()
     text = re.sub(r"[^a-zA-Z0-9\s]", "", text)
     text = re.sub(r"\s+", " ", text).strip()
@@ -31,6 +34,7 @@ def normalize_text(text: str) -> str:
 
 
 def process_text(text: str, row_id: int) -> dict:
+    """Process text through normalization and tokenization pipeline."""
     global _tokenizer
     
     normalized = normalize_text(text)
@@ -51,6 +55,7 @@ def process_text(text: str, row_id: int) -> dict:
 
 
 def process_batch(batch_data: list) -> list:
+    """Process a batch of data in a worker process."""
     results = []
     
     for row_id, line in batch_data:
@@ -79,6 +84,8 @@ def run_multiprocess_pipeline(
     """
     Run multiprocessing preprocessing pipeline with intermediate outputs.
     
+    Uses Python's multiprocessing to parallelize work across CPU cores.
+    
     Args:
         input_file: Path to input JSONL file
         output_file: Path to output JSONL file
@@ -89,7 +96,7 @@ def run_multiprocess_pipeline(
         num_workers = cpu_count()
     
     print("\n" + "=" * 70)
-    print(f"Running Running Multiprocessing Pipeline ({num_workers} workers)")
+    print(f"Running Multiprocessing Pipeline ({num_workers} workers)")
     print("=" * 70)
     
     # Setup performance tracking
@@ -97,7 +104,7 @@ def run_multiprocess_pipeline(
     tracker.start()
     
     # Read input data
-    print(f"Reading Reading from: {input_file}")
+    print(f"Reading from: {input_file}")
     with open(input_file, 'r', encoding='utf-8') as f:
         lines = f.readlines()
     
@@ -105,16 +112,16 @@ def run_multiprocess_pipeline(
         lines = lines[:max_rows]
     
     total_lines = len(lines)
-    print(f"Processing Processing {total_lines:,} rows with {num_workers} workers...")
+    print(f"Processing {total_lines:,} rows with {num_workers} workers...")
     
     # Create (row_id, line) tuples
     indexed_lines = list(enumerate(lines))
     
-    # Split data into batches for each worker
+    # Split data into batches for parallel processing
     batch_size = max(100, total_lines // (num_workers * 10))
     batches = [indexed_lines[i:i + batch_size] for i in range(0, len(indexed_lines), batch_size)]
     
-    print(f"Created Created {len(batches)} batches (size ~{batch_size} rows each)")
+    print(f"Created {len(batches)} batches (size ~{batch_size} rows each)")
     
     # Storage for all results
     all_results = []
@@ -133,16 +140,16 @@ def run_multiprocess_pipeline(
             # Update memory tracking
             tracker.update_peak_memory()
     
-    # Sort by ID to maintain order
+    # Sort results by ID to maintain original order
     all_results.sort(key=lambda x: x['id'])
     
-    # Prepare intermediate outputs
+    # Extract intermediate outputs at each stage
     normalized_data = [{'id': r['id'], 'text': r['normalized']} for r in all_results]
     tokenized_data = [{'id': r['id'], 'tokens': r['tokens'], 'token_count': r['token_count']} for r in all_results]
     formatted_data = [{'id': r['id'], 'formatted': r['formatted'], 'token_ids': r['token_ids']} for r in all_results]
     
     # Save intermediate outputs
-    print("\nSaving Saving intermediate outputs...")
+    print("\nSaving intermediate outputs...")
     intermediate_dir = "results/intermediate/multi"
     
     norm_count = save_jsonl(f"{intermediate_dir}/normalized.jsonl", normalized_data)
@@ -177,15 +184,15 @@ def run_multiprocess_pipeline(
     
     # Print intermediate outputs summary
     print("\n" + "=" * 70)
-    print("=== Intermediate Outputs Saved ===")
+    print("Intermediate Outputs Saved")
     print("=" * 70)
-    print(f"Normalized → {intermediate_dir}/normalized.jsonl ({norm_count:,} rows)")
-    print(f"Tokenized  → {intermediate_dir}/tokenized.jsonl ({tok_count:,} rows)")
-    print(f"Formatted  → {intermediate_dir}/formatted.jsonl ({fmt_count:,} rows)")
+    print(f"Normalized: {intermediate_dir}/normalized.jsonl ({norm_count:,} rows)")
+    print(f"Tokenized:  {intermediate_dir}/tokenized.jsonl ({tok_count:,} rows)")
+    print(f"Formatted:  {intermediate_dir}/formatted.jsonl ({fmt_count:,} rows)")
     print("=" * 70 + "\n")
     
-    print(f"Saved Final output saved to: {output_file}")
-    print(f"Created Output size: {output_size_mb:.2f} MB\n")
+    print(f"Final output saved to: {output_file}")
+    print(f"Output size: {output_size_mb:.2f} MB\n")
 
 
 def main():

@@ -1,4 +1,4 @@
-"""
+ """
 Dataset Generator
 
 Generate a sample text dataset for benchmarking.
@@ -26,31 +26,31 @@ def generate_sample_dataset(
         source: Source dataset ('wikitext' or 'openwebtext')
     """
     print("\n" + "=" * 70)
-    print("Generating Generating Sample Dataset")
+    print("Generating Sample Dataset")
     print("=" * 70)
     
     # Ensure output directory exists
     Path(output_file).parent.mkdir(parents=True, exist_ok=True)
     
-    print(f"Loading Loading {source} dataset from Hugging Face...")
+    print(f"Loading {source} dataset from Hugging Face...")
     
     if source == 'wikitext':
         # Load WikiText dataset
         dataset = load_dataset('wikitext', 'wikitext-2-raw-v1', split='train')
     else:
-        # Load a subset of OpenWebText or similar
-        print("⚠️  OpenWebText is large. Loading a small subset...")
+        # OpenWebText is large, so we load a small subset
+        print("OpenWebText is large. Loading a small subset...")
         dataset = load_dataset('openwebtext', split='train', streaming=True)
     
-    print(f"Target Target rows: {target_rows:,}")
-    print(f"Output Output file: {output_file}")
-    print(f"\nGenerating Generating dataset...")
+    print(f"Target rows: {target_rows:,}")
+    print(f"Output file: {output_file}")
+    print(f"\nGenerating dataset...")
     
     rows_written = 0
     
     with open(output_file, 'w', encoding='utf-8') as f:
         
-        # If we need more rows than available, we'll cycle through the dataset
+        # If dataset is smaller than target, cycle through multiple times
         cycles_needed = (target_rows // len(dataset)) + 1 if hasattr(dataset, '__len__') else 1
         
         pbar = tqdm(total=target_rows, desc="Writing rows")
@@ -92,11 +92,11 @@ def generate_sample_dataset(
     file_size_mb = Path(output_file).stat().st_size / 1024 / 1024
     
     print("\n" + "=" * 70)
-    print("Complete Dataset Generation Complete")
+    print("Dataset Generation Complete")
     print("=" * 70)
-    print(f"Target Total rows: {rows_written:,}")
-    print(f" File size: {file_size_mb:.2f} MB")
-    print(f"Output Saved to: {output_file}")
+    print(f"Total rows: {rows_written:,}")
+    print(f"File size: {file_size_mb:.2f} MB")
+    print(f"Saved to: {output_file}")
     print("=" * 70 + "\n")
 
 

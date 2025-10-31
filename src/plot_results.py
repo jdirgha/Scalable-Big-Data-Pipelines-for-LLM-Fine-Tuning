@@ -63,7 +63,7 @@ def plot_throughput(df: pd.DataFrame, output_path: str):
     plt.tight_layout()
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f" Saved throughput plot to: {output_path}")
+    print(f"Saved throughput plot to: {output_path}")
 
 
 def plot_memory(df: pd.DataFrame, output_path: str):
@@ -97,7 +97,7 @@ def plot_memory(df: pd.DataFrame, output_path: str):
     plt.tight_layout()
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f" Saved memory plot to: {output_path}")
+    print(f"Saved memory plot to: {output_path}")
 
 
 def plot_execution_time(df: pd.DataFrame, output_path: str):
@@ -134,7 +134,7 @@ def plot_execution_time(df: pd.DataFrame, output_path: str):
     plt.tight_layout()
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f" Saved execution time plot to: {output_path}")
+    print(f"Saved execution time plot to: {output_path}")
 
 
 def plot_combined_metrics(df: pd.DataFrame, output_path: str):
@@ -203,7 +203,7 @@ def plot_combined_metrics(df: pd.DataFrame, output_path: str):
     plt.tight_layout()
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f" Saved combined metrics plot to: {output_path}")
+    print(f"Saved combined metrics plot to: {output_path}")
 
 
 def plot_efficiency_scatter(df: pd.DataFrame, output_path: str):
@@ -240,7 +240,7 @@ def plot_efficiency_scatter(df: pd.DataFrame, output_path: str):
     plt.tight_layout()
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f" Saved efficiency scatter plot to: {output_path}")
+    print(f"Saved efficiency scatter plot to: {output_path}")
 
 
 def generate_all_plots(metrics_csv: str, output_dir: str = 'results'):
@@ -252,13 +252,13 @@ def generate_all_plots(metrics_csv: str, output_dir: str = 'results'):
         output_dir: Directory for output plots
     """
     print("\n" + "=" * 70)
-    print(" Generating Visualization Plots")
+    print("Generating Visualization Plots")
     print("=" * 70)
     
     # Load metrics
-    print(f"📂 Loading metrics from: {metrics_csv}")
+    print(f"Loading metrics from: {metrics_csv}")
     df = pd.read_csv(metrics_csv)
-    print(f" Found {len(df)} benchmark results\n")
+    print(f"Found {len(df)} benchmark results\n")
     
     # Ensure output directory exists
     Path(output_dir).mkdir(parents=True, exist_ok=True)
@@ -267,7 +267,7 @@ def generate_all_plots(metrics_csv: str, output_dir: str = 'results'):
     set_plot_style()
     
     # Generate individual plots
-    print("🎨 Generating plots...")
+    print("Generating plots...")
     plot_throughput(df, f"{output_dir}/throughput.png")
     plot_memory(df, f"{output_dir}/memory.png")
     plot_execution_time(df, f"{output_dir}/execution_time.png")
@@ -275,7 +275,7 @@ def generate_all_plots(metrics_csv: str, output_dir: str = 'results'):
     plot_efficiency_scatter(df, f"{output_dir}/efficiency_scatter.png")
     
     print("\n" + "=" * 70)
-    print(" All plots generated successfully!")
+    print("All plots generated successfully!")
     print("=" * 70 + "\n")
 
 

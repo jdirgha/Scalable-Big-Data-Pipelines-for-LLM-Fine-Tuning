@@ -16,6 +16,7 @@ from measure_utils import (
 
 
 def normalize_text(text: str) -> str:
+    """Normalize text by lowercasing and removing special characters."""
     text = text.lower()
     text = re.sub(r"[^a-zA-Z0-9\s]", "", text)
     text = re.sub(r"\s+", " ", text).strip()
@@ -24,10 +25,13 @@ def normalize_text(text: str) -> str:
 
 @ray.remote
 class TokenizerActor:
+    """Ray actor that handles tokenization in distributed workers."""
+    
     def __init__(self):
         self.tokenizer = GPT2TokenizerFast.from_pretrained('gpt2')
     
     def process_text(self, text: str, row_id: int) -> dict:
+        """Process text through normalization and tokenization pipeline."""
         normalized = normalize_text(text)
         tokens = self.tokenizer.tokenize(normalized)
         formatted = " ".join(tokens)
@@ -47,6 +51,7 @@ class TokenizerActor:
 
 @ray.remote
 def process_batch(batch_data: list, actor) -> list:
+    """Process a batch of data using a Ray actor."""
     results = []
     
     for row_id, line in batch_data:
@@ -75,6 +80,8 @@ def run_ray_pipeline(
     """
     Run Ray distributed preprocessing pipeline with intermediate outputs.
     
+    Uses Ray's distributed computing framework for parallel processing.
+    
     Args:
         input_file: Path to input JSONL file
         output_file: Path to output JSONL file
@@ -85,13 +92,13 @@ def run_ray_pipeline(
     if not ray.is_initialized():
         ray.init(ignore_reinit_error=True)
     
-    # Determine number of actors
+    # Determine number of actors based on available CPUs
     if num_actors is None:
         num_actors = ray.available_resources().get('CPU', 4)
         num_actors = int(num_actors)
     
     print("\n" + "=" * 70)
-    print(f"Running Running Ray Distributed Pipeline ({num_actors} actors)")
+    print(f"Running Ray Distributed Pipeline ({num_actors} actors)")
     print("=" * 70)
     
     # Setup performance tracking
@@ -99,11 +106,11 @@ def run_ray_pipeline(
     tracker.start()
     
     # Create tokenizer actors
-    print(f"Creating Creating {num_actors} tokenizer actors...")
+    print(f"Creating {num_actors} tokenizer actors...")
     actors = [TokenizerActor.remote() for _ in range(num_actors)]
     
     # Read input data
-    print(f"Reading Reading from: {input_file}")
+    print(f"Reading from: {input_file}")
     with open(input_file, 'r', encoding='utf-8') as f:
         lines = f.readlines()
     
@@ -111,25 +118,25 @@ def run_ray_pipeline(
         lines = lines[:max_rows]
     
     total_lines = len(lines)
-    print(f"Processing Processing {total_lines:,} rows with {num_actors} actors...")
+    print(f"Processing {total_lines:,} rows with {num_actors} actors...")
     
     # Create (row_id, line) tuples
     indexed_lines = list(enumerate(lines))
     
-    # Split data into batches
+    # Split data into batches for distributed processing
     batch_size = max(100, total_lines // (num_actors * 10))
     batches = [indexed_lines[i:i + batch_size] for i in range(0, len(indexed_lines), batch_size)]
     
-    print(f"Created Created {len(batches)} batches (size ~{batch_size} rows each)")
+    print(f"Created {len(batches)} batches (size ~{batch_size} rows each)")
     
-    # Distribute batches to actors in round-robin fashion
+    # Distribute batches to actors using round-robin assignment
     futures = []
     for i, batch in enumerate(batches):
         actor = actors[i % num_actors]
         future = process_batch.remote(batch, actor)
         futures.append(future)
     
-    # Collect results with progress bar
+    # Collect results as they complete
     all_results = []
     
     remaining_futures = futures
@@ -154,16 +161,16 @@ def run_ray_pipeline(
     
     pbar.close()
     
-    # Sort by ID to maintain order
+    # Sort results by ID to maintain original order
     all_results.sort(key=lambda x: x['id'])
     
-    # Prepare intermediate outputs
+    # Extract intermediate outputs at each stage
     normalized_data = [{'id': r['id'], 'text': r['normalized']} for r in all_results]
     tokenized_data = [{'id': r['id'], 'tokens': r['tokens'], 'token_count': r['token_count']} for r in all_results]
     formatted_data = [{'id': r['id'], 'formatted': r['formatted'], 'token_ids': r['token_ids']} for r in all_results]
     
     # Save intermediate outputs
-    print("\nSaving Saving intermediate outputs...")
+    print("\nSaving intermediate outputs...")
     intermediate_dir = "results/intermediate/ray"
     
     norm_count = save_jsonl(f"{intermediate_dir}/normalized.jsonl", normalized_data)
@@ -198,15 +205,15 @@ def run_ray_pipeline(
     
     # Print intermediate outputs summary
     print("\n" + "=" * 70)
-    print("=== Intermediate Outputs Saved ===")
+    print("Intermediate Outputs Saved")
     print("=" * 70)
-    print(f"Normalized → {intermediate_dir}/normalized.jsonl ({norm_count:,} rows)")
-    print(f"Tokenized  → {intermediate_dir}/tokenized.jsonl ({tok_count:,} rows)")
-    print(f"Formatted  → {intermediate_dir}/formatted.jsonl ({fmt_count:,} rows)")
+    print(f"Normalized: {intermediate_dir}/normalized.jsonl ({norm_count:,} rows)")
+    print(f"Tokenized:  {intermediate_dir}/tokenized.jsonl ({tok_count:,} rows)")
+    print(f"Formatted:  {intermediate_dir}/formatted.jsonl ({fmt_count:,} rows)")
     print("=" * 70 + "\n")
     
-    print(f"Saved Final output saved to: {output_file}")
-    print(f"Created Output size: {output_size_mb:.2f} MB\n")
+    print(f"Final output saved to: {output_file}")
+    print(f"Output size: {output_size_mb:.2f} MB\n")
     
     # Shutdown Ray
     ray.shutdown()

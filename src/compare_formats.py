@@ -136,18 +136,18 @@ def run_format_comparison(input_jsonl: str, results_dir: str = 'results'):
         results_dir: Directory for temporary output files
     """
     print("\n" + "=" * 70)
-    print(" Format Comparison: JSONL vs Parquet")
+    print("Format Comparison: JSONL vs Parquet")
     print("=" * 70)
     
     # Ensure results directory exists
     Path(results_dir).mkdir(parents=True, exist_ok=True)
     
     # Load data from input JSONL
-    print(f"📂 Loading data from: {input_jsonl}")
+    print(f"Loading data from: {input_jsonl}")
     with open(input_jsonl, 'r', encoding='utf-8') as f:
         data = [json.loads(line.strip()) for line in f]
     
-    print(f" Loaded {len(data):,} rows\n")
+    print(f"Loaded {len(data):,} rows\n")
     
     # Define output paths
     jsonl_out = f"{results_dir}/temp_output.jsonl"
@@ -156,53 +156,53 @@ def run_format_comparison(input_jsonl: str, results_dir: str = 'results'):
     results = []
     
     # Benchmark JSONL write
-    print("  Benchmarking JSONL write...")
+    print("Benchmarking JSONL write...")
     jsonl_write_metrics = benchmark_jsonl_write(data, jsonl_out)
     results.append(jsonl_write_metrics)
-    print(f"   Done Time: {jsonl_write_metrics['time_sec']:.2f}s, "
+    print(f"  Time: {jsonl_write_metrics['time_sec']:.2f}s, "
           f"Size: {jsonl_write_metrics['size_mb']:.2f} MB")
     
     # Benchmark JSONL read
-    print("  Benchmarking JSONL read...")
+    print("Benchmarking JSONL read...")
     jsonl_read_metrics = benchmark_jsonl_read(jsonl_out)
     results.append(jsonl_read_metrics)
-    print(f"   Done Time: {jsonl_read_metrics['time_sec']:.2f}s")
+    print(f"  Time: {jsonl_read_metrics['time_sec']:.2f}s")
     
     # Benchmark Parquet write
-    print("  Benchmarking Parquet write...")
+    print("Benchmarking Parquet write...")
     parquet_write_metrics = benchmark_parquet_write(data, parquet_out)
     results.append(parquet_write_metrics)
-    print(f"   Done Time: {parquet_write_metrics['time_sec']:.2f}s, "
+    print(f"  Time: {parquet_write_metrics['time_sec']:.2f}s, "
           f"Size: {parquet_write_metrics['size_mb']:.2f} MB")
     
     # Benchmark Parquet read
-    print("  Benchmarking Parquet read...")
+    print("Benchmarking Parquet read...")
     parquet_read_metrics = benchmark_parquet_read(parquet_out)
     results.append(parquet_read_metrics)
-    print(f"   Done Time: {parquet_read_metrics['time_sec']:.2f}s")
+    print(f"  Time: {parquet_read_metrics['time_sec']:.2f}s")
     
     # Summary
     print("\n" + "=" * 70)
-    print(" Summary")
+    print("Summary")
     print("=" * 70)
     
-    print("\n Write Performance:")
-    print(f"   JSONL:   {jsonl_write_metrics['time_sec']:.2f}s "
+    print("\nWrite Performance:")
+    print(f"  JSONL:   {jsonl_write_metrics['time_sec']:.2f}s "
           f"({jsonl_write_metrics['size_mb']:.2f} MB)")
-    print(f"   Parquet: {parquet_write_metrics['time_sec']:.2f}s "
+    print(f"  Parquet: {parquet_write_metrics['time_sec']:.2f}s "
           f"({parquet_write_metrics['size_mb']:.2f} MB)")
     
     speedup = jsonl_write_metrics['time_sec'] / parquet_write_metrics['time_sec']
     compression = (1 - parquet_write_metrics['size_mb'] / jsonl_write_metrics['size_mb']) * 100
-    print(f"    Parquet is {speedup:.2f}x {'faster' if speedup > 1 else 'slower'}")
-    print(f"    Parquet saves {compression:.1f}% space")
+    print(f"  Parquet is {speedup:.2f}x {'faster' if speedup > 1 else 'slower'}")
+    print(f"  Parquet saves {compression:.1f}% space")
     
-    print("\n Read Performance:")
-    print(f"   JSONL:   {jsonl_read_metrics['time_sec']:.2f}s")
-    print(f"   Parquet: {parquet_read_metrics['time_sec']:.2f}s")
+    print("\nRead Performance:")
+    print(f"  JSONL:   {jsonl_read_metrics['time_sec']:.2f}s")
+    print(f"  Parquet: {parquet_read_metrics['time_sec']:.2f}s")
     
     speedup = jsonl_read_metrics['time_sec'] / parquet_read_metrics['time_sec']
-    print(f"    Parquet is {speedup:.2f}x {'faster' if speedup > 1 else 'slower'}")
+    print(f"  Parquet is {speedup:.2f}x {'faster' if speedup > 1 else 'slower'}")
     
     print("\n" + "=" * 70 + "\n")
     
@@ -210,7 +210,7 @@ def run_format_comparison(input_jsonl: str, results_dir: str = 'results'):
     results_df = pd.DataFrame(results)
     results_csv = f"{results_dir}/format_comparison.csv"
     results_df.to_csv(results_csv, index=False)
-    print(f" Results saved to: {results_csv}")
+    print(f"Results saved to: {results_csv}")
 
 
 def main():

@@ -13,13 +13,13 @@ from pathlib import Path
 
 def run_command(cmd: list, description: str):
     """Run a command and handle errors."""
-    print(f"\n🔄 {description}...")
+    print(f"\n{description}...")
     try:
         subprocess.run(cmd, check=True, capture_output=True, text=True)
-        print(f"Success {description} - PASSED")
+        print(f"[PASSED] {description}")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"Error {description} - FAILED")
+        print(f"[FAILED] {description}")
         print(f"Error: {e.stderr}")
         return False
 
@@ -27,7 +27,7 @@ def run_command(cmd: list, description: str):
 def main():
     """Run quick verification tests."""
     print("\n" + "=" * 70)
-    print("🧪 Quick Test Suite - Verification")
+    print("Quick Test Suite - Verification")
     print("=" * 70)
     print("This will run a fast test with 1000 rows to verify setup.\n")
     
@@ -35,7 +35,7 @@ def main():
     test_data = Path("data/test_sample.jsonl")
     
     # Test 1: Generate small test dataset
-    print("\nDataset Test 1: Dataset Generation")
+    print("\nTest 1: Dataset Generation")
     success = run_command(
         ["python3", str(src_dir / "generate_dataset.py"),
          "--output", str(test_data),
@@ -43,11 +43,11 @@ def main():
         "Generate 1000-row test dataset"
     )
     if not success:
-        print("\nError Dataset generation failed. Check your setup.")
+        print("\n[ERROR] Dataset generation failed. Check your setup.")
         sys.exit(1)
     
     # Test 2: Single-process pipeline
-    print("\nDataset Test 2: Single-Process Pipeline")
+    print("\nTest 2: Single-Process Pipeline")
     success = run_command(
         ["python3", str(src_dir / "single_process.py"),
          "--input", str(test_data),
@@ -57,7 +57,7 @@ def main():
     )
     
     # Test 3: Multiprocessing pipeline
-    print("\nDataset Test 3: Multiprocessing Pipeline")
+    print("\nTest 3: Multiprocessing Pipeline")
     success = run_command(
         ["python3", str(src_dir / "multi_process.py"),
          "--input", str(test_data),
@@ -68,7 +68,7 @@ def main():
     )
     
     # Test 4: Ray pipeline
-    print("\nDataset Test 4: Ray Distributed Pipeline")
+    print("\nTest 4: Ray Distributed Pipeline")
     success = run_command(
         ["python3", str(src_dir / "ray_runner.py"),
          "--input", str(test_data),
@@ -79,20 +79,20 @@ def main():
     )
     
     # Test 5: Check if metrics were created
-    print("\nDataset Test 5: Metrics Collection")
+    print("\nTest 5: Metrics Collection")
     if Path("results/metrics.csv").exists():
-        print("Success Metrics file created successfully")
+        print("[SUCCESS] Metrics file created successfully")
         
         # Show metrics
         with open("results/metrics.csv", 'r') as f:
-            print("\n📈 Current Metrics:")
+            print("\nCurrent Metrics:")
             print(f.read())
     else:
-        print("Warning  No metrics file found")
+        print("[WARNING] No metrics file found")
     
     # Summary
     print("\n" + "=" * 70)
-    print("Success Quick Test Complete!")
+    print("Quick Test Complete!")
     print("=" * 70)
     print("\nIf all tests passed, you're ready to run the full benchmark:")
     print("  python3 run_all.py")
