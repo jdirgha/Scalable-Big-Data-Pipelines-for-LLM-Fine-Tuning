@@ -76,15 +76,7 @@ def run_multiprocess_pipeline(
     max_rows: int = None,
     num_workers: int = None
 ):
-    """
-    Run multiprocessing preprocessing pipeline with intermediate outputs.
     
-    Args:
-        input_file: Path to input JSONL file
-        output_file: Path to output JSONL file
-        max_rows: Maximum number of rows to process (None = all)
-        num_workers: Number of worker processes (None = auto-detect)
-    """
     if num_workers is None:
         num_workers = cpu_count()
     
@@ -92,7 +84,7 @@ def run_multiprocess_pipeline(
     print(f"Running Running Multiprocessing Pipeline ({num_workers} workers)")
     print("=" * 70)
     
-    # Setup performance tracking
+    
     tracker = PerformanceTracker('multi')
     tracker.start()
     
@@ -107,22 +99,22 @@ def run_multiprocess_pipeline(
     total_lines = len(lines)
     print(f"Processing Processing {total_lines:,} rows with {num_workers} workers...")
     
-    # Create (row_id, line) tuples
+   
     indexed_lines = list(enumerate(lines))
     
-    # Split data into batches for each worker
+    
     batch_size = max(100, total_lines // (num_workers * 10))
     batches = [indexed_lines[i:i + batch_size] for i in range(0, len(indexed_lines), batch_size)]
     
     print(f"Created Created {len(batches)} batches (size ~{batch_size} rows each)")
     
-    # Storage for all results
+    
     all_results = []
     
-    # Process batches in parallel
+   
     with Pool(processes=num_workers, initializer=init_worker) as pool:
         
-        # Process batches with progress bar
+       
         for batch_results in tqdm(
             pool.imap(process_batch, batches),
             total=len(batches),
@@ -130,18 +122,18 @@ def run_multiprocess_pipeline(
         ):
             all_results.extend(batch_results)
             
-            # Update memory tracking
+            
             tracker.update_peak_memory()
     
-    # Sort by ID to maintain order
+    
     all_results.sort(key=lambda x: x['id'])
     
-    # Prepare intermediate outputs
+    
     normalized_data = [{'id': r['id'], 'text': r['normalized']} for r in all_results]
     tokenized_data = [{'id': r['id'], 'tokens': r['tokens'], 'token_count': r['token_count']} for r in all_results]
     formatted_data = [{'id': r['id'], 'formatted': r['formatted'], 'token_ids': r['token_ids']} for r in all_results]
     
-    # Save intermediate outputs
+   
     print("\nSaving Saving intermediate outputs...")
     intermediate_dir = "results/intermediate/multi"
     
@@ -149,13 +141,13 @@ def run_multiprocess_pipeline(
     tok_count = save_jsonl(f"{intermediate_dir}/tokenized.jsonl", tokenized_data)
     fmt_count = save_jsonl(f"{intermediate_dir}/formatted.jsonl", formatted_data)
     
-    # Save final output
+   
     final_count = save_jsonl(output_file, all_results)
     
-    # Stop tracking and collect metrics
+    
     perf_metrics = tracker.stop()
     
-    # Calculate additional metrics
+   
     output_size_mb = get_file_size_mb(output_file)
     throughput = len(all_results) / perf_metrics['elapsed_sec']
     
@@ -171,11 +163,11 @@ def run_multiprocess_pipeline(
         'formatted_rows': fmt_count
     }
     
-    # Print and save metrics
+    
     print_metrics(metrics)
     save_metrics(metrics)
     
-    # Print intermediate outputs summary
+   
     print("\n" + "=" * 70)
     print("=== Intermediate Outputs Saved ===")
     print("=" * 70)
@@ -220,10 +212,10 @@ def main():
     
     args = parser.parse_args()
     
-    # Ensure output directory exists
+    
     Path(args.output).parent.mkdir(parents=True, exist_ok=True)
     
-    # Run pipeline
+   
     run_multiprocess_pipeline(
         input_file=args.input,
         output_file=args.output,
