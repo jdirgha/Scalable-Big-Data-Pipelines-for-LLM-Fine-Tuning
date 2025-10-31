@@ -31,6 +31,7 @@ data/*.jsonl
 data/*.parquet
 data/*.csv
 !data/.gitkeep
+!data/sample_500_rows.jsonl
 
 # Results
 results/*.jsonl
