@@ -13,7 +13,7 @@ from pathlib import Path
 
 def run_command(cmd: list, description: str):
     """Run a command and handle errors."""
-    print(f"\n🔄 {description}...")
+    print(f"\n {description}...")
     try:
         subprocess.run(cmd, check=True, capture_output=True, text=True)
         print(f"Success {description} - PASSED")
@@ -27,7 +27,7 @@ def run_command(cmd: list, description: str):
 def main():
     """Run quick verification tests."""
     print("\n" + "=" * 70)
-    print("🧪 Quick Test Suite - Verification")
+    print(" Quick Test Suite - Verification")
     print("=" * 70)
     print("This will run a fast test with 1000 rows to verify setup.\n")
     
@@ -85,7 +85,7 @@ def main():
         
         # Show metrics
         with open("results/metrics.csv", 'r') as f:
-            print("\n📈 Current Metrics:")
+            print("\n Current Metrics:")
             print(f.read())
     else:
         print("Warning  No metrics file found")
