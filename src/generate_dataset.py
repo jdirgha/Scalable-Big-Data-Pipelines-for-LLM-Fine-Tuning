@@ -17,29 +17,22 @@ def generate_sample_dataset(
     target_rows: int = 50000,
     source: str = 'wikitext'
 ):
-    """
-    Generate a sample JSONL dataset for benchmarking.
-    
-    Args:
-        output_file: Path to output JSONL file
-        target_rows: Target number of rows
-        source: Source dataset ('wikitext' or 'openwebtext')
-    """
+   
     print("\n" + "=" * 70)
     print("Generating Generating Sample Dataset")
     print("=" * 70)
     
-    # Ensure output directory exists
+    
     Path(output_file).parent.mkdir(parents=True, exist_ok=True)
     
     print(f"Loading Loading {source} dataset from Hugging Face...")
     
     if source == 'wikitext':
-        # Load WikiText dataset
+        
         dataset = load_dataset('wikitext', 'wikitext-2-raw-v1', split='train')
     else:
-        # Load a subset of OpenWebText or similar
-        print("⚠️  OpenWebText is large. Loading a small subset...")
+        
+        print("  OpenWebText is large. Loading a small subset...")
         dataset = load_dataset('openwebtext', split='train', streaming=True)
     
     print(f"Target Target rows: {target_rows:,}")
@@ -50,7 +43,7 @@ def generate_sample_dataset(
     
     with open(output_file, 'w', encoding='utf-8') as f:
         
-        # If we need more rows than available, we'll cycle through the dataset
+        
         cycles_needed = (target_rows // len(dataset)) + 1 if hasattr(dataset, '__len__') else 1
         
         pbar = tqdm(total=target_rows, desc="Writing rows")
@@ -63,7 +56,7 @@ def generate_sample_dataset(
                 # Extract text
                 text = item.get('text', '')
                 
-                # Skip empty or very short texts
+                
                 if not text or len(text.strip()) < 50:
                     continue
                 
@@ -88,7 +81,7 @@ def generate_sample_dataset(
         
         pbar.close()
     
-    # Calculate file size
+    
     file_size_mb = Path(output_file).stat().st_size / 1024 / 1024
     
     print("\n" + "=" * 70)
