@@ -40,6 +40,11 @@ results/*.png
 results/*.csv
 results/temp_*
 !results/.gitkeep
+# Include sample results
+!results/combined_metrics.png
+!results/efficiency_scatter.png
+!results/throughput.png
+!results/metrics.csv
 
 # IDEs
 .vscode/
