@@ -63,13 +63,13 @@ def run_single_process_pipeline(
     
     print(f"Processing {total_lines:,} rows...")
     
-    # Storage for intermediate outputs
+
     normalized_data = []
     tokenized_data = []
     formatted_data = []
     final_data = []
     
-    # Process data sequentially
+
     rows_processed = 0
     
     with open(input_file, 'r', encoding='utf-8') as infile:
@@ -85,10 +85,10 @@ def run_single_process_pipeline(
                 if not text:
                     continue
                 
-                # Process text through all stages
+             
                 processed = process_text(text, tokenizer, rows_processed)
                 
-                # Collect intermediate outputs
+               
                 normalized_data.append({
                     'id': processed['id'],
                     'text': processed['normalized']
@@ -110,7 +110,7 @@ def run_single_process_pipeline(
                 
                 rows_processed += 1
                 
-                # Update memory tracking periodically
+             
                 if rows_processed % 1000 == 0:
                     tracker.update_peak_memory()
                 
@@ -184,10 +184,10 @@ def main():
     
     args = parser.parse_args()
     
-    # Ensure output directory exists
+
     Path(args.output).parent.mkdir(parents=True, exist_ok=True)
     
-    # Run pipeline
+
     run_single_process_pipeline(
         input_file=args.input,
         output_file=args.output,
