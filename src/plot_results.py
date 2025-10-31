@@ -1,8 +1,4 @@
-"""
-Results Visualization
 
-Generate charts and plots from benchmark metrics for the term paper.
-"""
 
 import argparse
 from pathlib import Path
@@ -12,7 +8,7 @@ import numpy as np
 
 
 def set_plot_style():
-    """Set consistent plot styling."""
+   
     plt.style.use('seaborn-v0_8-darkgrid' if 'seaborn-v0_8-darkgrid' in plt.style.available else 'default')
     plt.rcParams['figure.figsize'] = (10, 6)
     plt.rcParams['font.size'] = 11
@@ -22,13 +18,7 @@ def set_plot_style():
 
 
 def plot_throughput(df: pd.DataFrame, output_path: str):
-    """
-    Plot throughput comparison across runners.
     
-    Args:
-        df: DataFrame with metrics
-        output_path: Output file path for plot
-    """
     fig, ax = plt.subplots(figsize=(10, 6))
     
     runners = df['runner'].tolist()
@@ -37,7 +27,7 @@ def plot_throughput(df: pd.DataFrame, output_path: str):
     colors = ['#3498db', '#2ecc71', '#e74c3c'][:len(runners)]
     bars = ax.bar(runners, throughput, color=colors, alpha=0.8, edgecolor='black')
     
-    # Add value labels on bars
+   
     for bar in bars:
         height = bar.get_height()
         ax.text(bar.get_x() + bar.get_width()/2., height,
@@ -49,7 +39,7 @@ def plot_throughput(df: pd.DataFrame, output_path: str):
     ax.set_title('Pipeline Throughput Comparison', fontsize=14, fontweight='bold', pad=20)
     ax.grid(axis='y', alpha=0.3, linestyle='--')
     
-    # Calculate speedup annotations
+    
     if 'single' in runners:
         baseline_idx = runners.index('single')
         baseline_throughput = throughput[baseline_idx]
@@ -67,13 +57,7 @@ def plot_throughput(df: pd.DataFrame, output_path: str):
 
 
 def plot_memory(df: pd.DataFrame, output_path: str):
-    """
-    Plot memory usage comparison across runners.
     
-    Args:
-        df: DataFrame with metrics
-        output_path: Output file path for plot
-    """
     fig, ax = plt.subplots(figsize=(10, 6))
     
     runners = df['runner'].tolist()
@@ -82,7 +66,7 @@ def plot_memory(df: pd.DataFrame, output_path: str):
     colors = ['#9b59b6', '#f39c12', '#1abc9c'][:len(runners)]
     bars = ax.bar(runners, memory, color=colors, alpha=0.8, edgecolor='black')
     
-    # Add value labels on bars
+   
     for bar in bars:
         height = bar.get_height()
         ax.text(bar.get_x() + bar.get_width()/2., height,
@@ -101,13 +85,7 @@ def plot_memory(df: pd.DataFrame, output_path: str):
 
 
 def plot_execution_time(df: pd.DataFrame, output_path: str):
-    """
-    Plot execution time comparison across runners.
     
-    Args:
-        df: DataFrame with metrics
-        output_path: Output file path for plot
-    """
     fig, ax = plt.subplots(figsize=(10, 6))
     
     runners = df['runner'].tolist()
@@ -115,8 +93,7 @@ def plot_execution_time(df: pd.DataFrame, output_path: str):
     
     colors = ['#e67e22', '#16a085', '#c0392b'][:len(runners)]
     bars = ax.bar(runners, times, color=colors, alpha=0.8, edgecolor='black')
-    
-    # Add value labels on bars
+  
     for bar in bars:
         height = bar.get_height()
         mins = int(height // 60)
@@ -138,19 +115,13 @@ def plot_execution_time(df: pd.DataFrame, output_path: str):
 
 
 def plot_combined_metrics(df: pd.DataFrame, output_path: str):
-    """
-    Create a combined multi-metric comparison plot.
     
-    Args:
-        df: DataFrame with metrics
-        output_path: Output file path for plot
-    """
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     fig.suptitle('Pipeline Performance Summary', fontsize=16, fontweight='bold', y=1.00)
     
     runners = df['runner'].tolist()
     
-    # Plot 1: Throughput
+   
     ax1 = axes[0, 0]
     throughput = df['rows_per_sec'].tolist()
     colors1 = ['#3498db', '#2ecc71', '#e74c3c'][:len(runners)]
@@ -159,7 +130,7 @@ def plot_combined_metrics(df: pd.DataFrame, output_path: str):
     ax1.set_title('Throughput Comparison', fontweight='bold')
     ax1.grid(axis='y', alpha=0.3)
     
-    # Plot 2: Memory
+ 
     ax2 = axes[0, 1]
     memory = df['peak_mb'].tolist()
     colors2 = ['#9b59b6', '#f39c12', '#1abc9c'][:len(runners)]
@@ -168,7 +139,7 @@ def plot_combined_metrics(df: pd.DataFrame, output_path: str):
     ax2.set_title('Memory Usage Comparison', fontweight='bold')
     ax2.grid(axis='y', alpha=0.3)
     
-    # Plot 3: Execution Time
+  
     ax3 = axes[1, 0]
     times = df['secs'].tolist()
     colors3 = ['#e67e22', '#16a085', '#c0392b'][:len(runners)]
@@ -177,7 +148,7 @@ def plot_combined_metrics(df: pd.DataFrame, output_path: str):
     ax3.set_title('Execution Time Comparison', fontweight='bold')
     ax3.grid(axis='y', alpha=0.3)
     
-    # Plot 4: Speedup relative to single
+   
     ax4 = axes[1, 1]
     if 'single' in runners:
         baseline_idx = runners.index('single')
@@ -187,7 +158,7 @@ def plot_combined_metrics(df: pd.DataFrame, output_path: str):
         colors4 = ['#95a5a6', '#27ae60', '#e74c3c'][:len(runners)]
         bars = ax4.bar(runners, speedups, color=colors4, alpha=0.8, edgecolor='black')
         
-        # Add speedup labels
+        
         for bar in bars:
             height = bar.get_height()
             ax4.text(bar.get_x() + bar.get_width()/2., height,
@@ -207,13 +178,7 @@ def plot_combined_metrics(df: pd.DataFrame, output_path: str):
 
 
 def plot_efficiency_scatter(df: pd.DataFrame, output_path: str):
-    """
-    Create efficiency scatter plot (throughput vs memory).
     
-    Args:
-        df: DataFrame with metrics
-        output_path: Output file path for plot
-    """
     fig, ax = plt.subplots(figsize=(10, 8))
     
     runners = df['runner'].tolist()
@@ -244,30 +209,24 @@ def plot_efficiency_scatter(df: pd.DataFrame, output_path: str):
 
 
 def generate_all_plots(metrics_csv: str, output_dir: str = 'results'):
-    """
-    Generate all visualization plots from metrics CSV.
-    
-    Args:
-        metrics_csv: Path to metrics CSV file
-        output_dir: Directory for output plots
-    """
+  
     print("\n" + "=" * 70)
     print(" Generating Visualization Plots")
     print("=" * 70)
     
-    # Load metrics
-    print(f"📂 Loading metrics from: {metrics_csv}")
+    
+    print(f" Loading metrics from: {metrics_csv}")
     df = pd.read_csv(metrics_csv)
     print(f" Found {len(df)} benchmark results\n")
     
-    # Ensure output directory exists
+    
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     
-    # Set plot style
+ 
     set_plot_style()
     
-    # Generate individual plots
-    print("🎨 Generating plots...")
+
+    print(" Generating plots...")
     plot_throughput(df, f"{output_dir}/throughput.png")
     plot_memory(df, f"{output_dir}/memory.png")
     plot_execution_time(df, f"{output_dir}/execution_time.png")
