@@ -26,18 +26,11 @@ env/
 ENV/
 .venv
 
-# Data files
-data/*.jsonl
-data/*.parquet
-data/*.csv
+# Data files (temp files only)
+data/temp_*
 !data/.gitkeep
-!data/sample_500_rows.jsonl
 
-# Results (exclude large result files to save disk space)
-results/large_final/
-results/large/
-results/*.jsonl
-results/*.parquet
+# Results
 results/temp_*
 !results/.gitkeep
 
