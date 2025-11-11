@@ -33,18 +33,13 @@ data/*.csv
 !data/.gitkeep
 !data/sample_500_rows.jsonl
 
-# Results
+# Results (exclude large result files to save disk space)
+results/large_final/
+results/large/
 results/*.jsonl
 results/*.parquet
-results/*.png
-results/*.csv
 results/temp_*
 !results/.gitkeep
-# Include sample results
-!results/combined_metrics.png
-!results/efficiency_scatter.png
-!results/throughput.png
-!results/metrics.csv
 
 # IDEs
 .vscode/
